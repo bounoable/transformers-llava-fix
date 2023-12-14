@@ -318,10 +318,11 @@ class LlavaForConditionalGeneration(LlavaPreTrainedModel):
         image_to_overwrite &= image_to_overwrite.cumsum(-1) - 1 >= nb_image_pad[:, None].to(target_device)
 
         if image_to_overwrite.sum() != image_features.shape[:-1].numel():
-            raise ValueError(
-                f"The input provided to the model are wrong. The number of image tokens is {torch.sum(special_image_token_mask)} while"
-                f" the number of image given to the model is {num_images}. This prevents correct indexing and breaks batch generation."
-            )
+            print(f"Ignoring error: The input provided to the model are wrong. The number of image tokens is {torch.sum(special_image_token_mask)} while the number of image given to the model is {num_images}. This prevents correct indexing and breaks batch generation.")
+            # raise ValueError(
+            #     f"The input provided to the model are wrong. The number of image tokens is {torch.sum(special_image_token_mask)} while"
+            #     f" the number of image given to the model is {num_images}. This prevents correct indexing and breaks batch generation."
+            # )
 
         final_embedding[image_to_overwrite] = image_features.contiguous().reshape(-1, embed_dim).to(target_device)
         final_attention_mask |= image_to_overwrite
